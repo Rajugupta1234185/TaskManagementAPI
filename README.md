@@ -6,7 +6,7 @@ The application provides JWT authentication, secure password hashing, task CRUD 
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -19,7 +19,7 @@ Make sure you have installed:
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/Rajugupta1234185/TaskManagementAPI
 cd task-management
 ```
 
@@ -451,77 +451,7 @@ The application implements several security practices:
 
 ---
 
-# 🧪 Testing
 
-Run unit tests:
-
-```bash
-npm test
-```
-
-Run tests in watch mode:
-
-```bash
-npm run test:watch
-```
-
-Generate test coverage:
-
-```bash
-npm run test:cov
-```
-
-Run end-to-end tests:
-
-```bash
-npm run test:e2e
-```
-
----
-
-# 🧹 Code Quality
-
-Format the code:
-
-```bash
-npm run format
-```
-
-Run ESLint:
-
-```bash
-npm run lint
-```
-
-Build the application:
-
-```bash
-npm run build
-```
-
----
-
-# 🚀 Production
-
-Build the application:
-
-```bash
-npm run build
-```
-
-Start the production server:
-
-```bash
-npm run start:prod
-```
-
-For production database migrations:
-
-```bash
-npx prisma migrate deploy
-```
-
----
 
 # 📁 Project Structure
 
@@ -620,8 +550,6 @@ A reviewer can quickly verify the implementation using the included `api.http` f
 
 ---
 
-# 👨‍💻 Author
+#  Author
 
 **Raju Gupta**
-
-This project was developed as part of a Backend Developer technical assessment.
