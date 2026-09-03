@@ -1,0 +1,436 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+# After login, copy the access token from the response
+# and replace the value below.
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTFhNmI0Ni1iZDAzLTQyZWQtOWE5MC05ODRlYzVlNmE1NGEiLCJpYXQiOjE3ODg0NTIyNzksImV4cCI6MTc4ODQ1MjU3OX0.9OAVHj9yerdedoDdoI-nI1YRNg8vR25R5M-7wZIHwqE
+
+# Replace this after creating a task
+@taskId =107bf7ce-a188-40dd-a340-4c8c2f634480
+
+
+############################################################
+# AUTH
+############################################################
+
+### 1. Register User
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "raju@example.com",
+  "password": "password123"
+}
+
+
+### 2. Register Another User
+# Useful for testing authorization / ownership
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+
+### 3. Login
+# Copy the access token from the response
+# and put it in @accessToken above.
+# rate limit is also set 3 request in 10 sec
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "raju@example.com",
+  "password": "password123"
+}
+
+
+### 4. Login - Invalid Password
+# Expected: 401 Unauthorized
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "raju@example.com",
+  "password": "wrongpassword"
+}
+
+
+### 5. Login - Non-existent User
+# Expected: 401 Unauthorized
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "doesnotexist@example.com",
+  "password": "password123"
+}
+
+
+############################################################
+# AUTH VALIDATION
+############################################################
+
+### 6. Register - Invalid Email
+# Expected: 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+
+### 7. Register - Short Password
+# Expected: 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "shortpassword@example.com",
+  "password": "123"
+}
+
+
+### 8. Register - Missing Email
+# Expected: 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "password": "password123"
+}
+
+
+### 9. Register - Missing Password
+# Expected: 400 Bad Request
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "missingpassword@example.com"
+}
+
+
+### 10. Register - Duplicate Email
+# Expected: 409 Conflict
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "raju@example.com",
+  "password": "password123"
+}
+
+
+############################################################
+# TASKS - AUTHENTICATED
+############################################################
+
+### 11. Create Task
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn NestJS",
+  "description": "Complete the NestJS task management assessment"
+}
+
+
+### 12. Create Task - Another Task
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn Prisma",
+  "description": "Study Prisma relations and error handling"
+}
+
+
+### 13. Create Completed Task
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Setup PostgreSQL",
+  "description": "Configure database and run migrations",
+  "isCompleted": true
+}
+
+
+### 14. Get All My Tasks
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+
+
+### 15. Get Task By ID
+GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+
+
+### 16. Update Task Title
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn NestJS and Clean Architecture"
+}
+
+
+### 17. Update Task Description
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "description": "Complete NestJS Clean Architecture implementation"
+}
+
+
+### 18. Mark Task as Completed
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "isCompleted": true
+}
+
+
+### 19. Mark Task as Incomplete
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "isCompleted": false
+}
+
+
+### 20. Update Multiple Fields
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Build Production Ready API",
+  "description": "Implement authentication, authorization and error handling",
+  "isCompleted": true
+}
+
+
+### 21. Delete Task
+DELETE {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+
+
+############################################################
+# TASK VALIDATION
+############################################################
+
+### 22. Create Task - Missing Title
+# Expected: 400 Bad Request
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "description": "This task does not have a title"
+}
+
+
+### 23. Create Task - Empty Title
+# Expected: 400 Bad Request
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": ""
+}
+
+
+### 24. Create Task - Invalid isCompleted
+# Expected: 400 Bad Request
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Invalid task",
+  "isCompleted": "yes"
+}
+
+
+############################################################
+# AUTHORIZATION / SECURITY
+############################################################
+
+### 25. Get Tasks Without Token
+# Expected: 401 Unauthorized
+GET {{baseUrl}}/tasks
+
+
+### 26. Get Task Without Token
+# Expected: 401 Unauthorized
+GET {{baseUrl}}/tasks/{{taskId}}
+
+
+### 27. Create Task Without Token
+# Expected: 401 Unauthorized
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Unauthorized task"
+}
+
+
+### 28. Update Task Without Token
+# Expected: 401 Unauthorized
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Unauthorized update"
+}
+
+
+### 29. Delete Task Without Token
+# Expected: 401 Unauthorized
+DELETE {{baseUrl}}/tasks/{{taskId}}
+
+
+### 30. Invalid JWT
+# Expected: 401 Unauthorized
+GET {{baseUrl}}/tasks
+Authorization: Bearer invalid-token
+
+
+############################################################
+# NOT FOUND
+############################################################
+
+### 31. Get Non-existent Task
+# Expected: 404 Not Found
+GET {{baseUrl}}/tasks/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{accessToken}}
+
+
+### 32. Update Non-existent Task
+# Expected: 404 Not Found
+PATCH {{baseUrl}}/tasks/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "This task does not exist"
+}
+
+
+### 33. Delete Non-existent Task
+# Expected: 404 Not Found
+DELETE {{baseUrl}}/tasks/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{accessToken}}
+
+
+############################################################
+# AUTHORIZATION - OWNERSHIP
+############################################################
+
+# To test this properly:
+#
+# 1. Login as raju@example.com
+# 2. Create a task
+# 3. Login as testuser@example.com
+# 4. Replace @accessToken with testuser's token
+# 5. Try accessing Raju's task using the task ID
+#
+# Expected: 403 Forbidden
+#
+# The following requests demonstrate the test.
+
+
+### 34. Access Another User's Task
+# Expected: 403 Forbidden
+GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+
+
+### 35. Update Another User's Task
+# Expected: 403 Forbidden
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Trying to modify another user's task"
+}
+
+
+### 36. Delete Another User's Task
+# Expected: 403 Forbidden
+DELETE {{baseUrl}}/tasks/{{taskId}}
+
+
+############################################################
+# ADDITIONAL EDGE CASES
+############################################################
+
+### 37. Invalid Task ID
+# Expected: 400 Bad Request OR 404 Not Found
+# depending on your implementation.
+GET {{baseUrl}}/tasks/not-a-valid-id
+Authorization: Bearer {{accessToken}}
+
+
+### 38. Empty PATCH Body
+# Expected: 400 Bad Request
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{}
+
+
+### 39. Extra / Unknown Fields
+# whitelist:true + forbidNonWhitelisted:true
+# Expected: 400 Bad Request
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Test task",
+  "description": "Testing validation",
+  "unknownField": "should not be accepted"
+}
+
+
+############################################################
+# COMPLETE FLOW
+############################################################
+
+# Recommended order for testing the complete application:
+#
+# 1. Register
+# 2. Login
+# 3. Copy access token
+# 4. Set @accessToken
+# 5. Create task
+# 6. Copy task ID
+# 7. Set @taskId
+# 8. Get all tasks
+# 9. Get task by ID
+# 10. Update task
+# 11. Mark completed
+# 12. Delete task
+#
+############################################################
