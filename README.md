@@ -20,7 +20,7 @@ Make sure you have installed:
 
 ```bash
 git clone https://github.com/Rajugupta1234185/TaskManagementAPI
-cd task-management
+cd TaskManagementAPI
 ```
 
 ### 2. Install dependencies
